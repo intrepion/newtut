@@ -4,11 +4,11 @@ mod test {
         use super::super::*;
 
         #[test]
-        fn return_folder_name_with_app_name_hello_world_and_language_rust_and_program_type_library()
+        fn return_folder_name_with_application_name_hello_world_and_language_rust_and_program_type_library()
         {
             let expected = "a-hello-world-l-rust-p-library";
 
-            let actual = &get_folder_name("hello world", "rust", "library");
+            let actual = &get_folder_name("Hello World", "Rust", "Library");
 
             assert_eq!(actual, expected);
         }
@@ -18,8 +18,7 @@ mod test {
         use super::super::*;
 
         #[test]
-        fn return_valid_text_for_repository_with_valid_text()
-        {
+        fn return_valid_text_for_repository_with_valid_text() {
             let expected = "todo";
 
             let actual = &make_text_valid_for_repository("todo");
@@ -28,8 +27,7 @@ mod test {
         }
 
         #[test]
-        fn return_valid_text_for_repository_with_spaceful_text()
-        {
+        fn return_valid_text_for_repository_with_spaceful_text() {
             let expected = "fizz-buzz";
 
             let actual = &make_text_valid_for_repository("  fizz buzz   \n");
@@ -38,8 +36,7 @@ mod test {
         }
 
         #[test]
-        fn return_valid_text_for_repository_with_capitalized_text()
-        {
+        fn return_valid_text_for_repository_with_capitalized_text() {
             let expected = "hello-world";
 
             let actual = &make_text_valid_for_repository("Hello World");
@@ -49,9 +46,11 @@ mod test {
     }
 }
 
-pub fn get_folder_name<'a>(app_name: &'a str, language: &'a str, program_type: &'a str) -> String {
-    let app_name = make_text_valid_for_repository(app_name);
-    format!("a-{app_name}-l-{language}-p-{program_type}")
+pub fn get_folder_name<'a>(application_name: &'a str, language: &'a str, program_type: &'a str) -> String {
+    let application_name = make_text_valid_for_repository(application_name);
+    let language = make_text_valid_for_repository(language);
+    let program_type = make_text_valid_for_repository(program_type);
+    format!("a-{application_name}-l-{language}-p-{program_type}")
 }
 
 fn make_text_valid_for_repository(text: &str) -> String {
