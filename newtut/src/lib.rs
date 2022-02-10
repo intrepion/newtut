@@ -4,8 +4,8 @@ mod test {
         use super::super::*;
 
         #[test]
-        fn return_folder_name_with_application_name_hello_world_and_language_rust_and_program_type_library()
-        {
+        fn return_folder_name_with_application_name_hello_world_and_language_rust_and_program_type_library(
+        ) {
             let expected = "a-hello-world-l-rust-p-library";
 
             let actual = &get_folder_name("Hello World", "Rust", "Library");
@@ -46,7 +46,11 @@ mod test {
     }
 }
 
-pub fn get_folder_name<'a>(application_name: &'a str, language: &'a str, program_type: &'a str) -> String {
+pub fn get_folder_name<'a>(
+    application_name: &'a str,
+    language: &'a str,
+    program_type: &'a str,
+) -> String {
     let application_name = make_text_valid_for_repository(application_name);
     let language = make_text_valid_for_repository(language);
     let program_type = make_text_valid_for_repository(program_type);
