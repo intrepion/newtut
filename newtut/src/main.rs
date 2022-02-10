@@ -136,7 +136,7 @@ fn main() {
     println!("creating .gitignore file");
 
     let mut file = File::create(".gitignore").expect("unable to create .gitignore file");
-    file.write_all(get_gitignore_text(&language, &program_type).as_bytes())
+    file.write_all(get_gitignore_text(language, program_type).as_bytes())
         .expect("unable to write to .gitignore file");
 
     println!("git add .gitignore");
@@ -162,7 +162,7 @@ fn main() {
     }
 
     let creating_gitignore_file_message =
-        get_creating_gitignore_file_message(&language, &program_type);
+        get_creating_gitignore_file_message(language, program_type);
 
     println!("git commit --message {creating_gitignore_file_message}");
 
