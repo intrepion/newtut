@@ -130,37 +130,34 @@ fn main() {
 
     display_output_or_exit("git commit", git_commit_output);
 
-    println!("git push;");
+    git_push();
 
-    let git_push_output = Command::new("git")
-        .arg("push")
-        .output()
-        .expect("git push failed");
+    let full_application_name = format!(
+        "{}-{}",
+        make_text_valid_for_repository(application_name),
+        make_text_valid_for_repository(program_type)
+    );
 
-    display_output_or_exit("git push", git_push_output);
-
-    let valid_application_name = make_text_valid_for_repository(application_name);
-
-    println!("cargo new --lib {valid_application_name};");
+    println!("cargo new --lib {full_application_name};");
 
     let cargo_new_output = Command::new("cargo")
         .arg("new")
         .arg("--lib")
-        .arg(&valid_application_name)
+        .arg(&full_application_name)
         .output()
         .expect("cargo new failed");
 
     display_output_or_exit("cargo new", cargo_new_output);
 
-    println!("git add {valid_application_name}");
+    println!("git add {full_application_name}");
 
-    let git_add_valid_application_name_output = Command::new("git")
+    let git_add_full_application_name_output = Command::new("git")
         .arg("add")
-        .arg(&valid_application_name)
+        .arg(&full_application_name)
         .output()
         .expect("git add failed");
 
-    display_output_or_exit("git add", git_add_valid_application_name_output);
+    display_output_or_exit("git add", git_add_full_application_name_output);
 
     let generate_application_message =
         get_generate_application_message(application_name, language, program_type);
@@ -175,6 +172,8 @@ fn main() {
         .expect("git commit failed");
 
     display_output_or_exit("git commit", git_commit_output);
+
+    git_push();
 }
 
 fn display_output_or_exit(output_name: &str, output: Output) {
@@ -193,4 +192,15 @@ fn display_output_or_exit(output_name: &str, output: Output) {
 
         process::exit(1);
     }
+}
+
+fn git_push() {
+    println!("git push;");
+
+    let git_push_output = Command::new("git")
+        .arg("push")
+        .output()
+        .expect("git push failed");
+
+    display_output_or_exit("git push", git_push_output);
 }
