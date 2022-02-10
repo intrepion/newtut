@@ -1,7 +1,7 @@
 use newtut::{get_creating_gitignore_file_message, get_folder_name, get_gitignore_text};
 use std::fs::File;
 use std::io::Write;
-use std::process::Command;
+use std::process::{Command, Output};
 use std::{env, fs, process};
 
 fn main() {
@@ -62,19 +62,7 @@ fn main() {
         .output()
         .expect("gh repo create failed");
 
-    if gh_repo_create_output.status.success() {
-        println!(
-            "gh repo create stdout: {}",
-            String::from_utf8_lossy(&gh_repo_create_output.stdout)
-        );
-    } else {
-        println!(
-            "gh repo create stderr: {}",
-            String::from_utf8_lossy(&gh_repo_create_output.stderr)
-        );
-
-        process::exit(1);
-    }
+    display_output_or_exit("gh repo create", gh_repo_create_output);
 
     println!("cd {folder_name}");
 
@@ -89,7 +77,7 @@ fn main() {
 
     println!("git commit --amend --message '{new_commit_message}'");
 
-    let git_commit_output = Command::new("git")
+    let git_commit_amend_output = Command::new("git")
         .arg("commit")
         .arg("--amend")
         .arg("--message")
@@ -97,19 +85,7 @@ fn main() {
         .output()
         .expect("git commit failed");
 
-    if git_commit_output.status.success() {
-        println!(
-            "git commit stdout: {}",
-            String::from_utf8_lossy(&git_commit_output.stdout)
-        );
-    } else {
-        println!(
-            "git commit stderr: {}",
-            String::from_utf8_lossy(&git_commit_output.stderr)
-        );
-
-        process::exit(1);
-    }
+    display_output_or_exit("git commit", git_commit_amend_output);
 
     println!("git push --force");
 
@@ -119,19 +95,7 @@ fn main() {
         .output()
         .expect("git push force failed");
 
-    if git_push_force_output.status.success() {
-        println!(
-            "git push force stdout: {}",
-            String::from_utf8_lossy(&git_push_force_output.stdout)
-        );
-    } else {
-        println!(
-            "git push force stderr: {}",
-            String::from_utf8_lossy(&git_push_force_output.stderr)
-        );
-
-        process::exit(1);
-    }
+    display_output_or_exit("git push force", git_push_force_output);
 
     println!("creating .gitignore file");
 
@@ -147,19 +111,7 @@ fn main() {
         .output()
         .expect("git add gitignore failed");
 
-    if git_add_gitignore_output.status.success() {
-        println!(
-            "git add .gitignore stdout: {}",
-            String::from_utf8_lossy(&git_add_gitignore_output.stdout)
-        );
-    } else {
-        println!(
-            "git add .gitignore stderr: {}",
-            String::from_utf8_lossy(&git_add_gitignore_output.stderr)
-        );
-
-        process::exit(1);
-    }
+    display_output_or_exit("git add gitignore", git_add_gitignore_output);
 
     let creating_gitignore_file_message =
         get_creating_gitignore_file_message(language, program_type);
@@ -173,19 +125,7 @@ fn main() {
         .output()
         .expect("git commit failed");
 
-    if git_commit_output.status.success() {
-        println!(
-            "git commit stdout: {}",
-            String::from_utf8_lossy(&git_commit_output.stdout)
-        );
-    } else {
-        println!(
-            "git commit stderr: {}",
-            String::from_utf8_lossy(&git_commit_output.stderr)
-        );
-
-        process::exit(1);
-    }
+    display_output_or_exit("git commit", git_commit_output);
 
     println!("git push");
 
@@ -194,15 +134,21 @@ fn main() {
         .output()
         .expect("git push failed");
 
-    if git_push_output.status.success() {
+    display_output_or_exit("git push", git_push_output);
+}
+
+fn display_output_or_exit(output_name: &str, output: Output) {
+    if output.status.success() {
         println!(
-            "git push stdout: {}",
-            String::from_utf8_lossy(&git_push_output.stdout)
+            "{} stdout: {}",
+            output_name,
+            String::from_utf8(output.stdout).unwrap()
         );
     } else {
         println!(
-            "git push stderr: {}",
-            String::from_utf8_lossy(&git_push_output.stderr)
+            "{} stderr: {}",
+            output_name,
+            String::from_utf8(output.stderr).unwrap()
         );
 
         process::exit(1);
