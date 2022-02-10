@@ -59,6 +59,17 @@ Cargo.lock
 
             assert_eq!(actual, expected);
         }
+
+        #[test]
+        fn return_gitignore_text_with_language_rust_and_program_type_console() {
+            let expected = r#"**/*.rs.bk
+**/target/
+"#;
+
+            let actual = get_gitignore_text("Rust", "Console");
+
+            assert_eq!(actual, expected);
+        }
     }
 }
 
@@ -76,10 +87,16 @@ pub fn get_folder_name<'a>(
 pub fn get_gitignore_text(language: &str, program_type: &str) -> String {
     let language = make_text_valid_for_repository(language);
     let program_type = make_text_valid_for_repository(program_type);
-    if language == "rust" && program_type == "library" {
-        return r#"**/*.rs.bk
+    if language == "rust" {
+        if program_type == "library" {
+            return r#"**/*.rs.bk
 **/target/
 Cargo.lock
+"#
+            .to_owned();
+        }
+        return r#"**/*.rs.bk
+**/target/
 "#
         .to_owned();
     }
