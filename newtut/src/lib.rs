@@ -100,11 +100,57 @@ Here, we are creating a .gitignore file to let git know that we do not want to t
             assert_eq!(actual, expected);
         }
     }
+
+    mod get_generate_application_message_should {
+        use super::super::get_generate_application_message;
+
+        #[test]
+        fn return_generate_application_message_with_application_name_hello_world_and_program_type_library(
+        ) {
+            let expected = r#"Generating application
+
+cargo new --lib hello-world;
+"#;
+
+            let actual = get_generate_application_message("Hello World", "Rust", "Library");
+
+            assert_eq!(actual, expected);
+        }
+    }
+}
+
+pub fn get_generate_application_message(
+    application_name: &str,
+    language: &str,
+    program_type: &str,
+) -> String {
+    let application_name = make_text_valid_for_repository(application_name);
+    let language = make_text_valid_for_repository(language);
+    let program_type = make_text_valid_for_repository(program_type);
+
+    if language == "rust" {
+        if program_type == "library" {
+            return format!(
+                r#"Generating application
+
+cargo new --lib {application_name};
+"#
+            );
+        }
+        return format!(
+            r#"Generating application
+
+cargo new {application_name};
+"#
+        );
+    }
+    "".to_owned()
 }
 
 pub fn get_creating_gitignore_file_message(language: &str, program_type: &str) -> String {
     let language = make_text_valid_for_repository(language);
     let program_type = make_text_valid_for_repository(program_type);
+
     if language == "rust" {
         if program_type == "library" {
             return r#"Creating .gitignore file
@@ -153,6 +199,6 @@ Cargo.lock
     "".to_owned()
 }
 
-fn make_text_valid_for_repository(text: &str) -> String {
+pub fn make_text_valid_for_repository(text: &str) -> String {
     text.trim().to_lowercase().replace(" ", "-")
 }

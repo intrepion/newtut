@@ -1,4 +1,7 @@
-use newtut::{get_creating_gitignore_file_message, get_folder_name, get_gitignore_text};
+use newtut::{
+    get_creating_gitignore_file_message, get_folder_name, get_generate_application_message,
+    get_gitignore_text, make_text_valid_for_repository,
+};
 use std::fs::File;
 use std::io::Write;
 use std::process::{Command, Output};
@@ -31,11 +34,11 @@ fn main() {
 
     let path_name = format!("repos/github/{user_name}");
 
-    println!("mkdir -p path_name: {path_name}");
+    println!("mkdir -p path_name: {path_name};");
 
     fs::create_dir_all(&path_name).expect("unable to create path name");
 
-    println!("cd {path_name}");
+    println!("cd {path_name};");
 
     env::set_current_dir(&path_name).expect("changing directory failed");
 
@@ -43,7 +46,7 @@ fn main() {
     let description = format!("{application_name} {program_type} written in {language}");
     let homepage = format!("https://{user_name}.github.io/{folder_name}");
 
-    let gh_repo_create_string = format!("gh repo create {folder_name} --clone --description \"{description}\" --homepage \"{homepage}\" --license mit --public");
+    let gh_repo_create_string = format!("gh repo create {folder_name} --clone --description \"{description}\" --homepage \"{homepage}\" --license mit --public;");
 
     println!("{gh_repo_create_string}");
 
@@ -64,7 +67,7 @@ fn main() {
 
     display_output_or_exit("gh repo create", gh_repo_create_output);
 
-    println!("cd {folder_name}");
+    println!("cd {folder_name};");
 
     env::set_current_dir(&folder_name).expect("changing directory failed");
 
@@ -75,7 +78,7 @@ fn main() {
 "#
     );
 
-    println!("git commit --amend --message '{new_commit_message}'");
+    println!("git commit --amend --message '{new_commit_message}';");
 
     let git_commit_amend_output = Command::new("git")
         .arg("commit")
@@ -87,7 +90,7 @@ fn main() {
 
     display_output_or_exit("git commit", git_commit_amend_output);
 
-    println!("git push --force");
+    println!("git push --force;");
 
     let git_push_force_output = Command::new("git")
         .arg("push")
@@ -103,7 +106,7 @@ fn main() {
     file.write_all(get_gitignore_text(language, program_type).as_bytes())
         .expect("unable to write to .gitignore file");
 
-    println!("git add .gitignore");
+    println!("git add .gitignore;");
 
     let git_add_gitignore_output = Command::new("git")
         .arg("add")
@@ -116,7 +119,7 @@ fn main() {
     let creating_gitignore_file_message =
         get_creating_gitignore_file_message(language, program_type);
 
-    println!("git commit --message {creating_gitignore_file_message}");
+    println!("git commit --message {creating_gitignore_file_message};");
 
     let git_commit_output = Command::new("git")
         .arg("commit")
@@ -127,7 +130,7 @@ fn main() {
 
     display_output_or_exit("git commit", git_commit_output);
 
-    println!("git push");
+    println!("git push;");
 
     let git_push_output = Command::new("git")
         .arg("push")
@@ -135,6 +138,43 @@ fn main() {
         .expect("git push failed");
 
     display_output_or_exit("git push", git_push_output);
+
+    let valid_application_name = make_text_valid_for_repository(application_name);
+
+    println!("cargo new --lib {valid_application_name};");
+
+    let cargo_new_output = Command::new("cargo")
+        .arg("new")
+        .arg("--lib")
+        .arg(&valid_application_name)
+        .output()
+        .expect("cargo new failed");
+
+    display_output_or_exit("cargo new", cargo_new_output);
+
+    println!("git add {valid_application_name}");
+
+    let git_add_valid_application_name_output = Command::new("git")
+        .arg("add")
+        .arg(&valid_application_name)
+        .output()
+        .expect("git add failed");
+
+    display_output_or_exit("git add", git_add_valid_application_name_output);
+
+    let generate_application_message =
+        get_generate_application_message(application_name, language, program_type);
+
+    println!("git commit --message '{generate_application_message}';");
+
+    let git_commit_output = Command::new("git")
+        .arg("commit")
+        .arg("--message")
+        .arg(&generate_application_message)
+        .output()
+        .expect("git commit failed");
+
+    display_output_or_exit("git commit", git_commit_output);
 }
 
 fn display_output_or_exit(output_name: &str, output: Output) {
