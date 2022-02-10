@@ -1,4 +1,5 @@
 use newtut::get_folder_name;
+use std::process::Command;
 use std::{env, fs, process};
 
 fn main() {
@@ -37,5 +38,37 @@ fn main() {
     env::set_current_dir(&path_name).expect("changing directory failed");
 
     let folder_name = get_folder_name(application_name, language, program_type);
-    println!("{folder_name}");
+    let description = "\"{application_name} {program_type} written in {language}\"";
+    let homepage = "\"https://{user_name}.github.io/{folder_name}\"";
+
+    println!("gh repo create {folder_name} --clone --description {description}--homepage {homepage} --license mit --public");
+
+    let gh_repo_create_output = Command::new("gh")
+        .arg("repo")
+        .arg("create")
+        .arg(&folder_name)
+        .arg("--clone")
+        .arg("--description")
+        .arg(&description)
+        .arg("--homepage")
+        .arg(&homepage)
+        .arg("--license")
+        .arg("mit")
+        .arg("--public")
+        .output()
+        .expect("gh repo create failed");
+
+    if gh_repo_create_output.status.success() {
+        println!(
+            "gh repo create stdout: {}",
+            String::from_utf8_lossy(&gh_repo_create_output.stdout)
+        );
+    } else {
+        println!(
+            "gh repo create stderr: {}",
+            String::from_utf8_lossy(&gh_repo_create_output.stderr)
+        );
+
+        process::exit(1);
+    }
 }
