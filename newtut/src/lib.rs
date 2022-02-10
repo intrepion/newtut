@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test {
     mod get_folder_name_should {
-        use super::super::*;
+        use super::super::get_folder_name;
 
         #[test]
         fn return_folder_name_with_application_name_hello_world_and_language_rust_and_program_type_library(
@@ -15,7 +15,7 @@ mod test {
     }
 
     mod make_text_valid_for_repository_should {
-        use super::super::*;
+        use super::super::make_text_valid_for_repository;
 
         #[test]
         fn return_valid_text_for_repository_with_valid_text() {
@@ -46,6 +46,8 @@ mod test {
     }
 
     mod get_gitignore_text_should {
+        use super::super::get_gitignore_text;
+
         #[test]
         fn return_gitignore_text_with_language_rust_and_program_type_library() {
             let expected = r#"**/*.rs.bk
@@ -69,6 +71,19 @@ pub fn get_folder_name<'a>(
     let language = make_text_valid_for_repository(language);
     let program_type = make_text_valid_for_repository(program_type);
     format!("a-{application_name}-l-{language}-p-{program_type}")
+}
+
+pub fn get_gitignore_text(language: &str, program_type: &str) -> String {
+    let language = make_text_valid_for_repository(language);
+    let program_type = make_text_valid_for_repository(program_type);
+    if language == "rust" && program_type == "library" {
+        return r#"**/*.rs.bk
+**/target/
+Cargo.lock
+"#
+        .to_owned();
+    }
+    "".to_owned()
 }
 
 fn make_text_valid_for_repository(text: &str) -> String {
