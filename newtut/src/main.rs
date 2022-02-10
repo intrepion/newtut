@@ -38,10 +38,12 @@ fn main() {
     env::set_current_dir(&path_name).expect("changing directory failed");
 
     let folder_name = get_folder_name(application_name, language, program_type);
-    let description = "\"{application_name} {program_type} written in {language}\"";
-    let homepage = "\"https://{user_name}.github.io/{folder_name}\"";
+    let description = format!("{application_name} {program_type} written in {language}");
+    let homepage = format!("https://{user_name}.github.io/{folder_name}");
 
-    println!("gh repo create {folder_name} --clone --description {description}--homepage {homepage} --license mit --public");
+    let gh_repo_create_string = format!("gh repo create {folder_name} --clone --description \"{description}\" --homepage \"{homepage}\" --license mit --public");
+
+    println!("{gh_repo_create_string}");
 
     let gh_repo_create_output = Command::new("gh")
         .arg("repo")
@@ -67,6 +69,63 @@ fn main() {
         println!(
             "gh repo create stderr: {}",
             String::from_utf8_lossy(&gh_repo_create_output.stderr)
+        );
+
+        process::exit(1);
+    }
+
+    println!("cd {folder_name}");
+
+    env::set_current_dir(&folder_name).expect("changing directory failed");
+
+    let new_commit_message = format!(
+        "{}{gh_repo_create_string}",
+        r#"Initial commit
+
+"#
+    );
+
+    println!("git commit --amend --message '{new_commit_message}'");
+
+    let git_commit_output = Command::new("git")
+        .arg("commit")
+        .arg("--amend")
+        .arg("--message")
+        .arg(&new_commit_message)
+        .output()
+        .expect("git commit failed");
+
+    if git_commit_output.status.success() {
+        println!(
+            "git commit stdout: {}",
+            String::from_utf8_lossy(&git_commit_output.stdout)
+        );
+    } else {
+        println!(
+            "git commit stderr: {}",
+            String::from_utf8_lossy(&git_commit_output.stderr)
+        );
+
+        process::exit(1);
+    }
+
+    println!("git push --force");
+
+    let git_push_force_output = Command::new("git")
+        .arg("push")
+        .arg("--force")
+        .output()
+        .expect("git push force failed");
+
+    if git_push_force_output.status.success() {
+        println!(
+            "git push force stdout: {}",
+            String::from_utf8_lossy(&git_push_force_output.stdout)
+        );
+    } else {
+        println!(
+            "git push force stderr: {}",
+            String::from_utf8_lossy(&git_push_force_output.stderr)
         );
 
         process::exit(1);
