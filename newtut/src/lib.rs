@@ -71,6 +71,56 @@ Cargo.lock
             assert_eq!(actual, expected);
         }
     }
+
+    mod get_creating_gitignore_file_message_should {
+        use super::super::get_creating_gitignore_file_message;
+
+        #[test]
+        fn return_creating_gitignore_file_message_with_language_rust_and_program_type_library() {
+            let expected = r#"Creating .gitignore file
+
+Here, we are creating a .gitignore file to let git know that we do not want to track any Rust backup files or anything in the build directory.
+Because we are creating a library, we also want to ignore the Cargo.lock file.
+"#;
+
+            let actual = get_creating_gitignore_file_message("Rust", "Library");
+
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn return_creating_gitignore_file_message_with_language_rust_and_program_type_console() {
+            let expected = r#"Creating .gitignore file
+
+Here, we are creating a .gitignore file to let git know that we do not want to track any Rust backup files or anything in the build directory.
+"#;
+
+            let actual = get_creating_gitignore_file_message("Rust", "Console");
+
+            assert_eq!(actual, expected);
+        }
+    }
+}
+
+pub fn get_creating_gitignore_file_message(language: &str, program_type: &str) -> String {
+    let language = make_text_valid_for_repository(language);
+    let program_type = make_text_valid_for_repository(program_type);
+    if language == "rust" {
+        if program_type == "library" {
+            return r#"Creating .gitignore file
+
+Here, we are creating a .gitignore file to let git know that we do not want to track any Rust backup files or anything in the build directory.
+Because we are creating a library, we also want to ignore the Cargo.lock file.
+"#
+            .to_owned();
+        }
+        return r#"Creating .gitignore file
+
+Here, we are creating a .gitignore file to let git know that we do not want to track any Rust backup files or anything in the build directory.
+"#
+        .to_owned();
+    }
+    "".to_owned()
 }
 
 pub fn get_folder_name<'a>(

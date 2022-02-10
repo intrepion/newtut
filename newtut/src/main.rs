@@ -1,4 +1,6 @@
-use newtut::get_folder_name;
+use newtut::{get_folder_name, get_creating_gitignore_file_message, get_gitignore_text};
+use std::fs::File;
+use std::io::Write;
 use std::process::Command;
 use std::{env, fs, process};
 
@@ -126,6 +128,81 @@ fn main() {
         println!(
             "git push force stderr: {}",
             String::from_utf8_lossy(&git_push_force_output.stderr)
+        );
+
+        process::exit(1);
+    }
+
+    println!("creating .gitignore file");
+
+    let mut file = File::create(".gitignore").expect("unable to create .gitignore file");
+    file.write_all(get_gitignore_text(&language, &program_type).as_bytes())
+        .expect("unable to write to .gitignore file");
+
+    
+    println!("git add .gitignore");
+
+    let git_add_gitignore_output = Command::new("git")
+        .arg("add")
+        .arg(".gitignore")
+        .output()
+        .expect("git add gitignore failed");
+
+    if git_add_gitignore_output.status.success() {
+        println!(
+            "git add .gitignore stdout: {}",
+            String::from_utf8_lossy(&git_add_gitignore_output.stdout)
+        );
+    } else {
+        println!(
+            "git add .gitignore stderr: {}",
+            String::from_utf8_lossy(&git_add_gitignore_output.stderr)
+        );
+
+        process::exit(1);
+    }
+
+    let creating_gitignore_file_message = get_creating_gitignore_file_message(&language, &program_type);
+
+    println!("git commit --message {creating_gitignore_file_message}");
+
+    let git_commit_output = Command::new("git")
+        .arg("commit")
+        .arg("--message")
+        .arg(&creating_gitignore_file_message)
+        .output()
+        .expect("git commit failed");
+
+    if git_commit_output.status.success() {
+        println!(
+            "git commit stdout: {}",
+            String::from_utf8_lossy(&git_commit_output.stdout)
+        );
+    } else {
+        println!(
+            "git commit stderr: {}",
+            String::from_utf8_lossy(&git_commit_output.stderr)
+        );
+
+        process::exit(1);
+    }
+
+    println!("git push");
+
+    let git_push_output = Command::new("git")
+        .arg("push")
+        .output()
+        .expect("git push failed");
+
+    if git_push_output.status.success() {
+        println!(
+            "git push stdout: {}",
+            String::from_utf8_lossy(&git_push_output.stdout)
+        );
+    } else {
+        println!(
+            "git push stderr: {}",
+            String::from_utf8_lossy(&git_push_output.stderr)
         );
 
         process::exit(1);
