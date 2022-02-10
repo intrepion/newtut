@@ -44,6 +44,20 @@ mod test {
             assert_eq!(actual, expected);
         }
     }
+
+    mod get_gitignore_text_should {
+        #[test]
+        fn return_gitignore_text_with_language_rust_and_program_type_library() {
+            let expected = r#"**/*.rs.bk
+**/target/
+Cargo.lock
+"#;
+
+            let actual = get_gitignore_text("Rust", "Library");
+
+            assert_eq!(actual, expected);
+        }
+    }
 }
 
 pub fn get_folder_name<'a>(
