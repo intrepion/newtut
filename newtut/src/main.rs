@@ -1,4 +1,4 @@
-use newtut::{get_folder_name, get_creating_gitignore_file_message, get_gitignore_text};
+use newtut::{get_creating_gitignore_file_message, get_folder_name, get_gitignore_text};
 use std::fs::File;
 use std::io::Write;
 use std::process::Command;
@@ -139,7 +139,6 @@ fn main() {
     file.write_all(get_gitignore_text(&language, &program_type).as_bytes())
         .expect("unable to write to .gitignore file");
 
-    
     println!("git add .gitignore");
 
     let git_add_gitignore_output = Command::new("git")
@@ -162,7 +161,8 @@ fn main() {
         process::exit(1);
     }
 
-    let creating_gitignore_file_message = get_creating_gitignore_file_message(&language, &program_type);
+    let creating_gitignore_file_message =
+        get_creating_gitignore_file_message(&language, &program_type);
 
     println!("git commit --message {creating_gitignore_file_message}");
 
