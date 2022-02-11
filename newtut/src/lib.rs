@@ -116,6 +116,19 @@ cargo new --lib hello-world;
 
             assert_eq!(actual, expected);
         }
+
+        #[test]
+        fn return_generate_application_message_with_application_name_hello_world_and_program_type_console(
+        ) {
+            let expected = r#"Generating application
+
+cargo new hello-world;
+"#;
+
+            let actual = get_generate_application_message("Hello World", "Rust", "Console");
+
+            assert_eq!(actual, expected);
+        }
     }
 }
 
