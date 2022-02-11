@@ -1,6 +1,6 @@
 use newtut::{
     get_creating_gitignore_file_message, get_folder_name, get_full_application_name,
-    get_generate_application_message, get_gitignore_text,
+    get_generate_application_message, get_gitignore_text, make_name_valid,
 };
 use std::fs::File;
 use std::io::Write;
@@ -133,17 +133,9 @@ fn main() {
     git_push();
 
     let full_application_name = get_full_application_name(application_name, program_type);
+    let valid_language = make_name_valid(language);
 
-    println!("generating application {full_application_name};");
-
-    let cargo_new_output = Command::new("cargo")
-        .arg("new")
-        .arg("--lib")
-        .arg(&full_application_name)
-        .output()
-        .expect("cargo new failed");
-
-    display_output_or_exit("cargo new", cargo_new_output);
+    generate_application(&valid_language, &full_application_name);
 
     println!("git add {full_application_name}");
 
@@ -187,6 +179,21 @@ fn display_output_or_exit(output_name: &str, output: Output) {
         );
 
         process::exit(1);
+    }
+}
+
+fn generate_application(valid_language: &str, full_application_name: &str) {
+    println!("generating application {full_application_name};");
+
+    if valid_language == "rust" {
+        let cargo_new_output = Command::new("cargo")
+            .arg("new")
+            .arg("--lib")
+            .arg(&full_application_name)
+            .output()
+            .expect("cargo new failed");
+
+        display_output_or_exit("cargo new", cargo_new_output);
     }
 }
 

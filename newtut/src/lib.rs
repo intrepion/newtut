@@ -243,6 +243,6 @@ Cargo.lock
     "".to_owned()
 }
 
-fn make_name_valid(name: &str) -> String {
+pub fn make_name_valid(name: &str) -> String {
     name.trim().to_lowercase().replace(" ", "-")
 }
