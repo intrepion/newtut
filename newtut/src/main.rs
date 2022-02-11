@@ -1,6 +1,7 @@
 use newtut::{
-    get_creating_gitignore_file_message, get_folder_name, get_full_application_name,
-    get_generate_application_message, get_gitignore_text, make_name_valid,
+    get_creating_gitignore_file_message, get_creating_workflow_file_message, get_folder_name,
+    get_full_application_name, get_generate_application_message, get_gitignore_text,
+    get_workflow_file_text, make_name_valid,
 };
 use std::fs::File;
 use std::io::Write;
@@ -105,62 +106,25 @@ fn main() {
     let mut file = File::create(".gitignore").expect("unable to create .gitignore file");
     file.write_all(get_gitignore_text(language, program_type).as_bytes())
         .expect("unable to write to .gitignore file");
-
-    println!("git add .gitignore;");
-
-    let git_add_gitignore_output = Command::new("git")
-        .arg("add")
-        .arg(".gitignore")
-        .output()
-        .expect("git add gitignore failed");
-
-    display_output_or_exit("git add gitignore", git_add_gitignore_output);
-
-    let creating_gitignore_file_message =
-        get_creating_gitignore_file_message(language, program_type);
-
-    println!("git commit --message {creating_gitignore_file_message};");
-
-    let git_commit_output = Command::new("git")
-        .arg("commit")
-        .arg("--message")
-        .arg(&creating_gitignore_file_message)
-        .output()
-        .expect("git commit failed");
-
-    display_output_or_exit("git commit", git_commit_output);
-
+    git_add(".gitignore");
+    git_commit(&get_creating_gitignore_file_message(language, program_type));
     git_push();
 
     let full_application_name = get_full_application_name(application_name, program_type);
     let valid_language = make_name_valid(language);
 
     generate_application(&valid_language, &full_application_name);
+    git_add(&full_application_name);
+    git_commit(&get_generate_application_message(
+        application_name,
+        language,
+        program_type,
+    ));
+    git_push();
 
-    println!("git add {full_application_name}");
-
-    let git_add_full_application_name_output = Command::new("git")
-        .arg("add")
-        .arg(&full_application_name)
-        .output()
-        .expect("git add failed");
-
-    display_output_or_exit("git add", git_add_full_application_name_output);
-
-    let generate_application_message =
-        get_generate_application_message(application_name, language, program_type);
-
-    println!("git commit --message '{generate_application_message}';");
-
-    let git_commit_output = Command::new("git")
-        .arg("commit")
-        .arg("--message")
-        .arg(&generate_application_message)
-        .output()
-        .expect("git commit failed");
-
-    display_output_or_exit("git commit", git_commit_output);
-
+    create_workflow_file(&full_application_name, &valid_language);
+    git_add(".github/workflows/main.yml");
+    git_commit(&get_creating_workflow_file_message(&valid_language));
     git_push();
 }
 
@@ -182,6 +146,17 @@ fn display_output_or_exit(output_name: &str, output: Output) {
     }
 }
 
+fn create_workflow_file(full_application_name: &str, valid_language: &str) {
+    if valid_language == "rust" {
+        fs::create_dir_all(".github/workflows").expect("unable to create workflows path name");
+        let mut file =
+            File::create(".github/workflows/main.yml").expect("unable to create workflow file");
+        let text = get_workflow_file_text(&full_application_name, &valid_language);
+        file.write_all(text.as_bytes())
+            .expect("unable to write to workflow file");
+    }
+}
+
 fn generate_application(valid_language: &str, full_application_name: &str) {
     println!("generating application {full_application_name};");
 
@@ -195,6 +170,31 @@ fn generate_application(valid_language: &str, full_application_name: &str) {
 
         display_output_or_exit("cargo new", cargo_new_output);
     }
+}
+
+fn git_add(files_to_add: &str) {
+    println!("git add {files_to_add};");
+
+    let git_add_output = Command::new("git")
+        .arg("add")
+        .arg(files_to_add)
+        .output()
+        .expect("git add failed");
+
+    display_output_or_exit("git add", git_add_output);
+}
+
+fn git_commit(message: &str) {
+    println!("git commit --message {message};");
+
+    let git_commit_output = Command::new("git")
+        .arg("commit")
+        .arg("--message")
+        .arg(&message)
+        .output()
+        .expect("git commit failed");
+
+    display_output_or_exit("git commit", git_commit_output);
 }
 
 fn git_push() {
