@@ -14,14 +14,14 @@ mod test {
         }
     }
 
-    mod make_text_valid_for_repository_should {
-        use super::super::make_text_valid_for_repository;
+    mod make_name_valid_should {
+        use super::super::make_name_valid;
 
         #[test]
         fn return_valid_text_for_repository_with_valid_text() {
             let expected = "todo";
 
-            let actual = &make_text_valid_for_repository("todo");
+            let actual = &make_name_valid("todo");
 
             assert_eq!(actual, expected);
         }
@@ -30,7 +30,7 @@ mod test {
         fn return_valid_text_for_repository_with_spaceful_text() {
             let expected = "fizz-buzz";
 
-            let actual = &make_text_valid_for_repository("  fizz buzz   \n");
+            let actual = &make_name_valid("  fizz buzz   \n");
 
             assert_eq!(actual, expected);
         }
@@ -39,7 +39,7 @@ mod test {
         fn return_valid_text_for_repository_with_capitalized_text() {
             let expected = "hello-world";
 
-            let actual = &make_text_valid_for_repository("Hello World");
+            let actual = &make_name_valid("Hello World");
 
             assert_eq!(actual, expected);
         }
@@ -130,6 +130,37 @@ cargo new hello-world;
             assert_eq!(actual, expected);
         }
     }
+
+    mod get_full_application_name_should {
+        use super::super::get_full_application_name;
+
+        #[test]
+        fn return_full_application_name_with_application_name_hello_world_and_program_type_library()
+        {
+            let expected = "a-hello-world-p-library";
+
+            let actual = get_full_application_name("Hello World", "Library");
+
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn return_full_application_name_with_application_name_hello_world_and_program_type_console()
+        {
+            let expected = "a-hello-world-p-console";
+
+            let actual = get_full_application_name("Hello World", "Console");
+
+            assert_eq!(actual, expected);
+        }
+    }
+}
+
+pub fn get_full_application_name(application_name: &str, program_type: &str) -> String {
+    let application_name = make_name_valid(application_name);
+    let program_type = make_name_valid(program_type);
+
+    return format!("a-{application_name}-p-{program_type}");
 }
 
 pub fn get_generate_application_message(
@@ -137,9 +168,9 @@ pub fn get_generate_application_message(
     language: &str,
     program_type: &str,
 ) -> String {
-    let application_name = make_text_valid_for_repository(application_name);
-    let language = make_text_valid_for_repository(language);
-    let program_type = make_text_valid_for_repository(program_type);
+    let application_name = make_name_valid(application_name);
+    let language = make_name_valid(language);
+    let program_type = make_name_valid(program_type);
 
     if language == "rust" {
         if program_type == "library" {
@@ -161,8 +192,8 @@ cargo new {application_name};
 }
 
 pub fn get_creating_gitignore_file_message(language: &str, program_type: &str) -> String {
-    let language = make_text_valid_for_repository(language);
-    let program_type = make_text_valid_for_repository(program_type);
+    let language = make_name_valid(language);
+    let program_type = make_name_valid(program_type);
 
     if language == "rust" {
         if program_type == "library" {
@@ -187,15 +218,15 @@ pub fn get_folder_name<'a>(
     language: &'a str,
     program_type: &'a str,
 ) -> String {
-    let application_name = make_text_valid_for_repository(application_name);
-    let language = make_text_valid_for_repository(language);
-    let program_type = make_text_valid_for_repository(program_type);
+    let application_name = make_name_valid(application_name);
+    let language = make_name_valid(language);
+    let program_type = make_name_valid(program_type);
     format!("a-{application_name}-l-{language}-p-{program_type}")
 }
 
 pub fn get_gitignore_text(language: &str, program_type: &str) -> String {
-    let language = make_text_valid_for_repository(language);
-    let program_type = make_text_valid_for_repository(program_type);
+    let language = make_name_valid(language);
+    let program_type = make_name_valid(program_type);
     if language == "rust" {
         if program_type == "library" {
             return r#"**/*.rs.bk
@@ -212,6 +243,6 @@ Cargo.lock
     "".to_owned()
 }
 
-pub fn make_text_valid_for_repository(text: &str) -> String {
-    text.trim().to_lowercase().replace(" ", "-")
+fn make_name_valid(name: &str) -> String {
+    name.trim().to_lowercase().replace(" ", "-")
 }

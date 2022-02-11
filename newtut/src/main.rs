@@ -1,6 +1,6 @@
 use newtut::{
-    get_creating_gitignore_file_message, get_folder_name, get_generate_application_message,
-    get_gitignore_text, make_text_valid_for_repository,
+    get_creating_gitignore_file_message, get_folder_name, get_full_application_name,
+    get_generate_application_message, get_gitignore_text,
 };
 use std::fs::File;
 use std::io::Write;
@@ -132,13 +132,9 @@ fn main() {
 
     git_push();
 
-    let full_application_name = format!(
-        "{}-{}",
-        make_text_valid_for_repository(application_name),
-        make_text_valid_for_repository(program_type)
-    );
+    let full_application_name = get_full_application_name(application_name, program_type);
 
-    println!("cargo new --lib {full_application_name};");
+    println!("generating application {full_application_name};");
 
     let cargo_new_output = Command::new("cargo")
         .arg("new")
