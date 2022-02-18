@@ -151,7 +151,7 @@ fn create_workflow_file(full_application_name: &str, valid_language: &str) {
         fs::create_dir_all(".github/workflows").expect("unable to create workflows path name");
         let mut file =
             File::create(".github/workflows/main.yml").expect("unable to create workflow file");
-        let text = get_workflow_file_text(&full_application_name, &valid_language);
+        let text = get_workflow_file_text(full_application_name, valid_language);
         file.write_all(text.as_bytes())
             .expect("unable to write to workflow file");
     }
