@@ -1,3 +1,4 @@
+pub mod language;
 pub mod utilities;
 
 use crate::utilities::make_name_valid::make_name_valid;
@@ -13,18 +14,12 @@ pub fn get_generate_application_message(
 
     if language == "rust" {
         if program_type == "library" {
-            return format!(
-                r#"Generating application
-
-cargo new --lib {application_name};
-"#
+            return language::rust::program_type::library::get_generate_application_message(
+                &application_name,
             );
         }
-        return format!(
-            r#"Generating application
-
-cargo new {application_name};
-"#
+        return language::rust::program_type::console::get_generate_application_message(
+            &application_name,
         );
     }
     "".to_owned()
