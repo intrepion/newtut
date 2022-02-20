@@ -24,25 +24,25 @@ mod test {
         }
     }
 
-    mod get_full_application_name_should {
-        use super::super::get_full_application_name;
+    mod get_app_name_prog_type_should {
+        use super::super::get_app_name_prog_type;
 
         #[test]
-        fn return_full_application_name_with_application_name_hello_world_and_program_type_library()
+        fn return_app_name_prog_type_with_application_name_hello_world_and_program_type_library()
         {
             let expected = "a-hello-world-p-library";
 
-            let actual = get_full_application_name("Hello World", "Library");
+            let actual = get_app_name_prog_type("Hello World", "Library");
 
             assert_eq!(actual, expected);
         }
 
         #[test]
-        fn return_full_application_name_with_application_name_hello_world_and_program_type_console()
+        fn return_app_name_prog_type_with_application_name_hello_world_and_program_type_console()
         {
             let expected = "a-hello-world-p-console";
 
-            let actual = get_full_application_name("Hello World", "Console");
+            let actual = get_app_name_prog_type("Hello World", "Console");
 
             assert_eq!(actual, expected);
         }
@@ -64,7 +64,7 @@ pub fn get_folder_name<'a>(
     format!("a-{application_name}-l-{language}-p-{program_type}")
 }
 
-pub fn get_full_application_name(application_name: &str, program_type: &str) -> String {
+pub fn get_app_name_prog_type(application_name: &str, program_type: &str) -> String {
     let application_name = make_name_valid(application_name);
     let program_type = make_name_valid(program_type);
 
@@ -163,8 +163,8 @@ Cargo.lock
     "".to_owned()
 }
 
-pub fn get_workflow_file_text(full_application_name: &str, language: &str) -> String {
-    let full_application_name = make_name_valid(full_application_name);
+pub fn get_workflow_file_text(app_name_prog_type: &str, language: &str) -> String {
+    let app_name_prog_type = make_name_valid(app_name_prog_type);
     let language = make_name_valid(language);
 
     if language == "rust" {
@@ -186,31 +186,31 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Format
-      run: cd {full_application_name} && cargo fmt -- --check
+      run: cd {app_name_prog_type} && cargo fmt -- --check
   check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Check
-      run: cd {full_application_name} && cargo check
+      run: cd {app_name_prog_type} && cargo check
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Lint
-      run: cd {full_application_name} && cargo clippy -- -D warnings
+      run: cd {app_name_prog_type} && cargo clippy -- -D warnings
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Test
-      run: cd {full_application_name} && cargo test --verbose
+      run: cd {app_name_prog_type} && cargo test --verbose
   audit:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Audit
-      run: cd {full_application_name} && cargo audit
+      run: cd {app_name_prog_type} && cargo audit
   unused:
     runs-on: ubuntu-latest
     steps:
@@ -225,7 +225,7 @@ jobs:
         args: cargo-udeps --locked
     - uses: actions/checkout@v2
     - name: Unused
-      run: cd {full_application_name} && cargo +nightly udeps
+      run: cd {app_name_prog_type} && cargo +nightly udeps
 "#
         );
     }

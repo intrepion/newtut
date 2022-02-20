@@ -1,6 +1,6 @@
 use newtut::{
     get_creating_gitignore_file_message, get_creating_workflow_file_message, get_folder_name,
-    get_full_application_name, get_generate_application_message, get_gitignore_text,
+    get_app_name_prog_type, get_generate_application_message, get_gitignore_text,
     get_workflow_file_text,
 };
 use newtut::utilities::make_name_valid::make_name_valid;
@@ -111,7 +111,7 @@ fn main() {
     git_commit(&get_creating_gitignore_file_message(language, program_type));
     git_push();
 
-    let full_application_name = get_full_application_name(application_name, program_type);
+    let full_application_name = get_app_name_prog_type(application_name, program_type);
     let valid_language = make_name_valid(language);
 
     generate_application(&valid_language, &full_application_name);
