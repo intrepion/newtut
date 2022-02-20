@@ -11,10 +11,10 @@ cargo new {application_name};
 }
 
 pub fn get_creating_gitignore_file_message() -> String {
-    return r#"Creating .gitignore file
+    r#"Creating .gitignore file
 
 Here, we are creating a .gitignore file to let git know that we do not want to track any Rust backup files or anything in the build directory.
 Because we are creating a library, we also want to ignore the Cargo.lock file.
 "#
-            .to_owned();
+            .to_owned()
 }
