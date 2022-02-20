@@ -1,9 +1,10 @@
-use newtut::{
-    get_creating_gitignore_file_message, get_creating_workflow_file_message, get_folder_name, get_generate_application_message, get_gitignore_text,
-    get_workflow_file_text,
-};
 use newtut::utilities::get_app_name_prog_type::get_app_name_prog_type;
+use newtut::utilities::get_folder_name::get_folder_name;
 use newtut::utilities::make_name_valid::make_name_valid;
+use newtut::{
+    get_creating_gitignore_file_message, get_creating_workflow_file_message,
+    get_generate_application_message, get_gitignore_text, get_workflow_file_text,
+};
 use std::fs::File;
 use std::io::Write;
 use std::process::{Command, Output};
